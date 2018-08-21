@@ -26,6 +26,11 @@ resource "aws_nat_gateway" "private_gw" {
 resource "aws_eip" "private_gw" {
   count = "${length(var.private_subnet_ids) == 0 && length(var.private_cidrs) != 0 ? 1 : 0}"
   vpc   = true
+
+  tags = "${merge(var.tags, map(
+    "Name", "${var.platform_name}-private-gw",
+    "KubernetesCluster","${var.platform_name}")
+  )}"
 }
 
 # Private route table: attach NAT gw for outbounds.
